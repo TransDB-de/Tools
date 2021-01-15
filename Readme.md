@@ -23,6 +23,6 @@ Only the used fields are imported, and the "lat" and "lon" fields are converted 
 
 Use `deno run -A GeoDbJson/main.ts` to run the script. The resulting JSON document will appear in the same folder as the script.
 
-## Download
+### Download
 
 You can also download the JSON document directly from [releases](https://github.com/TransDB-de/Tools/releases/download/0.1.0/GeoDbJson.zip).
