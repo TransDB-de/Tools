@@ -73,7 +73,7 @@ const index = {
 for (let i = 1; i < arr.length; i++) {
 	const entry = arr[i];
 
-	let level = parseInt( entry[index.name] );
+	let level = parseInt( entry[index.level] );
 
 	if (level < minLevel) continue;
 
