@@ -51,22 +51,26 @@ interface GeoJsonPoint {
 }
 
 interface Doc {
+	loc_id: string,
 	name: string,
 	ascii: string,
 	plz: string,
-	location: GeoJsonPoint
+	location: GeoJsonPoint,
+	of: string
 }
 
 let docArr: Doc[] = [];
 
 // get numerical indexes from first line in csv array
 const index = {
+	loc_id: arr[0].indexOf("#loc_id"),
 	name: arr[0].indexOf("name"),
 	ascii: arr[0].indexOf("ascii"),
 	plz: arr[0].indexOf("plz"),
 	lat: arr[0].indexOf("lat"),
 	lon: arr[0].indexOf("lon"),
-	level: arr[0].indexOf("level")
+	level: arr[0].indexOf("level"),
+	of: arr[0].indexOf("of")
 }
 
 // convert arrays to objects
@@ -86,10 +90,12 @@ for (let i = 1; i < arr.length; i++) {
 	}
 
 	let doc: Doc = {
+		loc_id: entry[ index.loc_id ],
 		name: entry[ index.name ],
 		ascii: entry[ index.ascii ],
 		plz: entry[ index.plz ],
-		location: loc
+		location: loc,
+		of: entry[ index.of ]
 	};
 
 	docArr.push(doc);
