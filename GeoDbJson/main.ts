@@ -23,8 +23,8 @@ console.log("Downloading latest 'DE.tab' file from opengeodb");
 console.time("Ellapsed time");
 
 
-let res = await fetch(url)
-let reader = readerFromStreamReader(res.body!.getReader())
+let res = await fetch(url);
+let reader = readerFromStreamReader(res.body!.getReader());
 
 let data = await Deno.readAll(reader);
 
@@ -51,12 +51,14 @@ interface GeoJsonPoint {
 }
 
 interface Doc {
-	loc_id: string,
+	level?: number,
+	loc_id?: string,
 	name: string,
-	ascii: string,
+	ascii?: string,
 	plz: string,
-	location: GeoJsonPoint,
-	of: string
+	location: GeoJsonPoint | null,
+	of?: string,
+	referenceLocation?: GeoJsonPoint
 }
 
 let docArr: Doc[] = [];
@@ -73,23 +75,29 @@ const index = {
 	of: arr[0].indexOf("of")
 }
 
-// convert arrays to objects
+// convert nested arrays to objects
 for (let i = 1; i < arr.length; i++) {
 	const entry = arr[i];
 
 	let level = parseInt( entry[index.level] );
 
-	if (level < minLevel) continue;
-
 	let lat = parseFloat( entry[index.lat] );
 	let lon = parseFloat( entry[index.lon] );
 
-	let loc: GeoJsonPoint = {
-		type: "Point",
-		coordinates: [ lat, lon ]
+	let loc: GeoJsonPoint | null = null;
+
+	// if lat and lon are present, convert to location
+	if (lat && lon) {
+
+		loc = {
+			type: "Point",
+			coordinates: [ lat, lon ]
+		}
+
 	}
 
 	let doc: Doc = {
+		level: level,
 		loc_id: entry[ index.loc_id ],
 		name: entry[ index.name ],
 		ascii: entry[ index.ascii ],
@@ -101,10 +109,73 @@ for (let i = 1; i < arr.length; i++) {
 	docArr.push(doc);
 }
 
+const embedReferenceLocation = (doc: Doc, refID: string) => {
+
+	// Loop to recursivly get referenced location, until it is found, or no further references are found
+	while ( !doc.location && !doc.referenceLocation ) {
+
+		// search for referenced document
+		let refDoc = docArr.find(d => d.loc_id === doc.of);
+
+		// no reference found
+		if (!refDoc) break;
+
+		if (refDoc.location) {
+
+			// fill location from reference
+			doc.referenceLocation = {
+				type: "Point",
+				coordinates: [
+					refDoc.location.coordinates[0],
+					refDoc.location.coordinates[1]
+				]
+			}
+
+		}
+
+		// no further reference linked
+		if (!refDoc.of) break;
+
+		// set reference to next reference
+		doc.of = refDoc.of;
+
+	}
+
+}
+
+// If there are referenced docs, extract their location. Not all entries have locations
+for (let i = 0; i < docArr.length; i++) {
+	const doc = docArr[i];
+
+	let refId = doc.of;
+
+	if (refId) {
+		embedReferenceLocation(doc, refId);
+	}
+}
+
+let finalDocs: Doc[] = [];
+
+// remove temp fields, and filter unwanted docs
+for (let i = 0; i < docArr.length; i++) {
+	const doc = docArr[i];
+
+	// level too low
+	if (doc.level && doc.level < minLevel) continue;
+
+	// no name present
+	if (!doc.name) continue;
+
+	delete doc.loc_id;
+	delete doc.of;
+
+	finalDocs.push(doc);
+}
+
 console.log("Stringifying to JSON");
 
 data = encoder.encode(
-	JSON.stringify(docArr)
+	JSON.stringify(finalDocs)
 );
 
 console.log(`Writing file to local folder as '${outName}'`);
