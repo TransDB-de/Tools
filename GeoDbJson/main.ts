@@ -1,6 +1,5 @@
 import { readerFromStreamReader } from "https://deno.land/std@0.83.0/io/streams.ts"
 import * as csv from "https://deno.land/std@0.83.0/encoding/csv.ts"
-import dirname from "https://deno.land/x/denoname/mod/dirname.ts"
 
 
 // Script Settings
@@ -12,7 +11,6 @@ const minLevel = 6; // the minimum level to include
 
 // Useful Constants
 
-const dir = dirname(import.meta);
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -109,48 +107,45 @@ for (let i = 1; i < arr.length; i++) {
 	docArr.push(doc);
 }
 
-const embedReferenceLocation = (doc: Doc, refID: string) => {
-
-	// Loop to recursivly get referenced location, until it is found, or no further references are found
-	while ( !doc.location && !doc.referenceLocation ) {
-
-		// search for referenced document
-		let refDoc = docArr.find(d => d.loc_id === doc.of);
-
-		// no reference found
-		if (!refDoc) break;
-
-		if (refDoc.location) {
-
-			// fill location from reference
-			doc.referenceLocation = {
-				type: "Point",
-				coordinates: [
-					refDoc.location.coordinates[0],
-					refDoc.location.coordinates[1]
-				]
-			}
-
-		}
-
-		// no further reference linked
-		if (!refDoc.of) break;
-
-		// set reference to next reference
-		doc.of = refDoc.of;
-
-	}
-
-}
-
 // If there are referenced docs, extract their location. Not all entries have locations
 for (let i = 0; i < docArr.length; i++) {
 	const doc = docArr[i];
 
+	// reference id which points to other document
 	let refId = doc.of;
 
 	if (refId) {
-		embedReferenceLocation(doc, refId);
+
+		// Loop to recursivly get referenced location, until it is found, or no further references are found
+		while ( !doc.location && !doc.referenceLocation ) {
+
+			// search for referenced document
+			let refDoc = docArr.find(d => d.loc_id === doc.of);
+
+			// no reference found
+			if (!refDoc) break;
+
+			if (refDoc.location) {
+
+				// fill location from reference
+				doc.referenceLocation = {
+					type: "Point",
+					coordinates: [
+						refDoc.location.coordinates[0],
+						refDoc.location.coordinates[1]
+					]
+				}
+
+			}
+
+			// no further reference linked
+			if (!refDoc.of) break;
+
+			// set reference to next reference
+			doc.of = refDoc.of;
+
+		}
+
 	}
 }
 
@@ -180,7 +175,7 @@ data = encoder.encode(
 
 console.log(`Writing file to local folder as '${outName}'`);
 
-await Deno.writeFile(dir + "data.json", data);
+await Deno.writeFile("./data.json", data);
 
 console.log("Done!");
 console.timeEnd("Ellapsed time");
