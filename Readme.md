@@ -10,6 +10,9 @@
 This repository conatins a collection of [deno](https://deno.land/) scripts, meant to aid the project in various ways.
 The scripts require no additional dependencies.
 
+You will find compiled windows binaries of the tools under [releases](https://github.com/TransDB-de/Tools/releases).
+The deno compile feature is experimental! Some tools may not behave as expected.
+
 Note, that due to how deno handles third-party modules, running a script for the first time requires an internet connection.
 
 ## GeoDbJson
@@ -21,7 +24,7 @@ Only the used fields are imported, and the "lat" and "lon" fields are converted 
 
 ### Usage
 
-Use `deno run -A GeoDbJson/main.ts` to run the script. The resulting JSON document will appear in the same folder as the script.
+Use `deno run -A GeoDbJson/main.ts` to run the script, or download a compiled binary and run it. The resulting JSON document will appear in the current working directory.
 
 ### Download
 
