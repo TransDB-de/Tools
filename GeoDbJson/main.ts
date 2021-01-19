@@ -89,7 +89,7 @@ for (let i = 1; i < arr.length; i++) {
 
 		loc = {
 			type: "Point",
-			coordinates: [ lat, lon ]
+			coordinates: [ lon, lat ]
 		}
 
 	}
