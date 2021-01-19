@@ -28,4 +28,4 @@ Use `deno run -A GeoDbJson/main.ts` to run the script, or download a compiled bi
 
 ### Download
 
-You can also download the JSON document directly from [releases](https://github.com/TransDB-de/Tools/releases/download/0.1.2/GeoDbJson.zip).
+You can also download the JSON document directly from [releases](https://github.com/TransDB-de/Tools/releases/download/0.2.0/OpenGeoDb_DE_JSON.zip).
