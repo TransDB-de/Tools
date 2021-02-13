@@ -1,0 +1,16 @@
+{
+  "name": "entrygenerator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Generate random entries for testing purposes",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Feuerhamster",
+  "license": "ISC",
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "faker": "^5.4.0"
+  }
+}
