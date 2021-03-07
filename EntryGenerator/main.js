@@ -78,7 +78,7 @@ for(let i = 0; i < args.count; i++) {
             break;
 
         case "hairremoval":
-            meta.attributes = faker.random.arrayElements(["insurancePay", "transfrendly", "hasDoctor"]);
+            meta.attributes = faker.random.arrayElements(["insurancePay", "transfriendly", "hasDoctor"]);
             meta.offers = faker.random.arrayElements(["laser", "ipl", "electro", "electroAE"]);
             break;
 
